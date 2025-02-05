@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html">
+    <h:head>
+        <title>Manual WebSocket Example</title>
+        <script>
+            let socket;
+
+            // Initialize WebSocket connection
+            function initializeWebSocket() {
+                // Replace with your WebSocket endpoint URL
+                const url = "ws://localhost:8080/Lab4-JavaEE/testChannel"; //
+                socket = new WebSocket(url);
+
+                // Define WebSocket event handlers
+                socket.onopen = function(event) {
+                    console.log("WebSocket connection opened:", event);
+                    alert("WebSocket connection established!");
+                };
+
+                socket.onmessage = function(event) {
+                    console.log("Message received from server:", event.data);
+                    alert("Server says: " + event.data);
+                };
+
+                socket.onclose = function(event) {
+                    console.log("WebSocket connection closed:", event);
+                    alert("WebSocket connection closed.");
+                };
+
+                socket.onerror = function(event) {
+                    console.error("WebSocket error occurred:", event);
+                    alert("WebSocket error occurred!");
+                };
+            }
+
+            // Function to send a message to the server
+            function sendMessage() {
+                if (!(!(socket) || !(socket.readyState === WebSocket.OPEN))) {
+                    const message = "Hello from the client!";
+                    console.log("Sending message to server:", message);
+                    socket.send(message);
+                } else {
+                    alert("WebSocket is not connected. Unable to send message.");
+                }
+            }
+
+            // Close WebSocket connection (optional for cleanup)
+            function closeWebSocket() {
+                if (socket) {
+                    socket.close();
+                }
+            }
+
+            // Initialize WebSocket when the page loads
+            window.onload = initializeWebSocket;
+        </script>
+    </h:head>
+    <h:body>
+        <h:form>
+            <h:commandButton value="Send Message" onclick="sendMessage(); return false;" />
+            <h:commandButton value="Close Connection" onclick="closeWebSocket(); return false;" />
+        </h:form>
+    </h:body>
+</html>

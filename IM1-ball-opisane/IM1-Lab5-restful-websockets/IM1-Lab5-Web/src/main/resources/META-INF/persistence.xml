@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+  <persistence-unit name="Lab5.PU" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>jdbc/payaratest</jta-data-source>
+    <!-- Explicitly list your entity classes -->
+    <class>com.mycompany.lab5.Request</class>
+    <properties>
+      <!-- EclipseLink specific properties -->
+      <property name="eclipselink.ddl-generation" value="create-tables"/>
+      <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+      <!-- Optional: debugging -->
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.logging.level.sql" value="FINE"/>
+      <property name="eclipselink.logging.parameters" value="true"/>
+      <!-- ddl -->
+      <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL.jdbc"/>
+      <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL.jdbc"/>
+    </properties>
+  </persistence-unit>
+</persistence>
