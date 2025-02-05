@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+<h:head>
+<title>Servlet Counter</title>
+</h:head>
+<h:body>
+    <h1>Current Counter value: #{sessionBean.counter} !</h1>
+    <h:form id="pageForm">
+        <h:commandButton value="Increment" action="#{sessionBean.incCounter()}">
+        </h:commandButton>
+    </h:form>
+</h:body>
+</html>

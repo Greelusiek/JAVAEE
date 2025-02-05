@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+    <h:head>
+        <title>Ajax Demo</title>
+    </h:head>
+    <h:body>
+        <h:form id="testform">
+            <script>
+                function onClickHandler() {
+                    console.log("Hello from Click Handler!");
+
+                    try {
+                        faces.ajax.request('testform', 'click',
+                                {execute: 'testform', render: 'testform'}
+                        );
+                    } catch (e) {
+                        console.log("Exepction: " + e);
+                    }
+                }
+                function onMessageHandler(message, channel, event) {
+                    console.log("Hello from Message Handler!");
+                    console.log("(" + channel + ")" + ": " + message);
+                    try {
+                        faces.ajax.request('testform', 'click',
+                                {execute: 'testform', render: 'testform'}
+                        );
+                    } catch (e) {
+                        console.log("Exepction: " + e);
+                    }
+                }
+                function onOpenHandler(channel) {
+                    console.log("Hello from Open Handler!");
+                    console.log("ws:" + channel + " " + "opened!");
+
+                }
+            </script>
+            <h:outputText id="outputname" value="Hello #{sessionBean.username}!"/>
+            <h:inputText id="inputname" value="#{sessionBean.username}"/>
+            <h:commandButton id="b1" value="B1">
+                <f:ajax execute="@form" render="@form"/>
+            </h:commandButton>
+            <h:commandButton id="b2" value="B2"
+                             onclick="onClickHandler(); return false;"/>
+            <h:commandButton id="b3" value="B3"
+                             onclick="faces.ajax.request('testform', 'someEvent',
+                                             {execute: 'testform', render: 'testform'}
+                                     );
+                                     return false;"/>
+            <h:commandButton id="b4" value="B4" action="#{applicationBean.pushSend()}">
+                <f:ajax execute="@form" render="@form"/>
+            </h:commandButton>
+
+            <f:websocket channel="OmniChannel" onmessage="onMessageHandler" onopen="onOpenHandler"/>
+
+            <!-- <o:socket channel="testChannel" onmessage="onMessageHandler" onopen="onOpenHandler"/> -->
+
+        </h:form>
+    </h:body>
+</html>

@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+    <h:head>
+        <title>Admin</title>
+        <script>
+            let socket;
+
+            // Initialize WebSocket connection
+            function initializeWebSocket() {
+                // Replace with your WebSocket endpoint URL
+                const url = "ws://localhost:8080/Lab4-JavaEE/testChannel"; //
+                socket = new WebSocket(url);
+
+                // Define WebSocket event handlers
+                socket.onopen = function (event) {
+                    console.log("WebSocket connection opened:", event);
+                    //alert("WebSocket connection established!");
+                };
+
+                socket.onmessage = function (event) {
+                    console.log("Message received from server:", event.data);
+                    //alert("Server says: " + event.data);
+                    /**/
+                    try {
+                        faces.ajax.request("pageForm", "event",
+                                {render: "pageForm"}
+                        );
+                    } catch (e) {
+                        console.log("Exepction: " + e);
+                    }
+                    /**/
+                    //document.location.reload();
+                };
+
+                socket.onclose = function (event) {
+                    console.log("WebSocket connection closed:", event);
+                    alert("WebSocket connection closed.");
+                };
+
+                socket.onerror = function (event) {
+                    console.error("WebSocket error occurred:", event);
+                    alert("WebSocket error occurred!");
+                };
+            }
+
+            // Function to send a message to the server
+            function sendMessage() {
+                if (!(!(socket) || !(socket.readyState === WebSocket.OPEN))) {
+                    const message = "Hello from the client!";
+                    console.log("Sending message to server:", message);
+                    socket.send(message);
+                } else {
+                    alert("WebSocket is not connected. Unable to send message.");
+                }
+            }
+
+            // Close WebSocket connection (optional for cleanup)
+            function closeWebSocket() {
+                if (socket) {
+                    socket.close();
+                }
+            }
+
+            // Initialize WebSocket when the page loads
+            window.onload = initializeWebSocket;
+        </script>
+        <style>
+            /* General styles for body and headings */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f9;
+                color: #333;
+                margin: 0;
+                padding: 20px;
+            }
+            h1 {
+                text-align: center;
+                color: #444;
+            }
+
+            /* Form and panel styling */
+            form {
+                margin: 20px auto;
+                padding: 10px;
+                max-width: 600px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .panelGroup {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+            }
+
+            /* Button styles */
+            input[type="submit"] {
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #fff;
+                background-color: #007bff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            input[type="submit"]:hover:not([disabled]) {
+                background-color: #0056b3;
+            }
+            input[type="submit"]:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+            }
+        </style>        
+    </h:head>
+    <h:body>
+        <h1>Admin</h1>
+        <h:form id="pageForm">
+            <div class="panelGroup">
+                <h:commandButton value="Start" action="#{applicationBean.start()}" disabled="#{applicationBean.isGameRunning() or !applicationBean.canStart()}">
+                    <f:ajax execute="@form" render="@none"/>
+                </h:commandButton>
+                <h:commandButton value="Restart" action="#{applicationBean.restart()}" disabled="#{!applicationBean.isGameRunning()}">
+                    <f:ajax execute="@form" render="@none"/>
+                </h:commandButton>
+                <h:commandButton value="End" action="#{applicationBean.end()}" disabled="#{!applicationBean.isGameRunning()}">
+                    <f:ajax execute="@form" render="@none"/>
+                </h:commandButton>
+            </div>
+        </h:form>
+    </h:body>
+</html> 

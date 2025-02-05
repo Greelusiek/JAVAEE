@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:o="http://omnifaces.org/ui">      
+    <h:head>
+        <title>WebSocket Demo</title>
+    </h:head>
+    <h:body>
+
+        <!-- JavaScript to handle the incoming WebSocket messages -->
+        <script>
+            function onMessageHandler(message) {
+                console.log("Message received: " + message);  // Log the message to the browser console
+                alert("Message received: " + message);  // Show an alert with the message
+            }
+        </script>
+
+        <h:form>
+            <!-- Define the WebSocket channel and the JavaScript function to handle messages -->
+            <o:socket channel="OmniChannel" scope="application" onmessage="onMessageHandler"/>
+
+            <!-- Button to trigger sending a message from the server -->
+            <h:commandButton value="Send Message" action="#{applicationBean.pushSend}" >
+                <f:ajax execute="@form" render="@form"/>
+            </h:commandButton>
+        </h:form>
+
+    </h:body>
+</html>

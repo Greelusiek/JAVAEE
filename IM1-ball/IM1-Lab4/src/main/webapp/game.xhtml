@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:c="jakarta.tags.core">
+    <h:head>
+        <title>Game</title>
+        <script>
+            let socket;
+
+            // Initialize WebSocket connection
+            function initializeWebSocket() {
+                // Replace with your WebSocket endpoint URL
+                const url = "ws://localhost:8080/Lab4-JavaEE/testChannel"; //
+                socket = new WebSocket(url);
+
+                // Define WebSocket event handlers
+                socket.onopen = function (event) {
+                    console.log("WebSocket connection opened:", event);
+                    //alert("WebSocket connection established!");
+                };
+
+                socket.onmessage = function (event) {
+                    console.log("Message received from server:", event.data);
+                    //alert("Server says: " + event.data);
+                    /**/
+                     try {
+                     faces.ajax.request("pageForm", "event",
+                     {render: "pageForm"}
+                     );
+                     } catch (e) {
+                     console.log("Exepction: " + e);
+                     }
+                     /**/
+                    //document.location.reload();
+                };
+
+                socket.onclose = function (event) {
+                    console.log("WebSocket connection closed:", event);
+                    alert("WebSocket connection closed.");
+                };
+
+                socket.onerror = function (event) {
+                    console.error("WebSocket error occurred:", event);
+                    alert("WebSocket error occurred!");
+                };
+            }
+
+            // Function to send a message to the server
+            function sendMessage() {
+                if (!(!(socket) || !(socket.readyState === WebSocket.OPEN))) {
+                    const message = "Hello from the client!";
+                    console.log("Sending message to server:", message);
+                    socket.send(message);
+                } else {
+                    alert("WebSocket is not connected. Unable to send message.");
+                }
+            }
+
+            // Close WebSocket connection (optional for cleanup)
+            function closeWebSocket() {
+                if (socket) {
+                    socket.close();
+                }
+            }
+
+            // Initialize WebSocket when the page loads
+            window.onload = initializeWebSocket;
+        </script>  
+        <style>
+            /* General styles for body and headings */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f8f9fa;
+                color: #333;
+                margin: 0;
+                padding: 20px;
+            }
+
+            h1 {
+                text-align: center;
+                color: #444;
+                margin-bottom: 20px;
+            }
+
+            form {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            ul {
+                list-style-type: none;
+                padding: 0;
+                margin: 10px 0px;
+                max-height: 200px; /* Make the list scrollable */
+                overflow-y: auto;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                background-color: #f9f9f9;
+                padding: 10px;
+            }
+
+            li {
+                padding: 5px 10px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            li:last-child {
+                border-bottom: none;
+                padding: 5px 10px 0px 10px;
+            }
+
+            .panelGroup {
+                margin-bottom: 20px;
+            }
+
+            input[type="submit"] {
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #fff;
+                background-color: #007bff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            
+            label {
+                padding: 10px 0px;
+                font-size: 16px;
+                border: none;
+            }            
+
+            input[type="submit"]:hover:not([disabled]) {
+                background-color: #0056b3;
+            }
+
+            input[type="submit"]:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+            }
+
+            input[type="text"] {
+                width: calc(100% - 20px);
+                padding: 8px;
+                margin-top: 8px;
+                margin-bottom: 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+
+            .error {
+                color: red;
+                display: block; 
+                padding: 10px 0px;
+                font-size: 16px;
+                border: none;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <h1>Game</h1>
+
+        <h:form id="pageForm">
+
+            <!-- Scrollable list for plays -->
+            <h:panelGroup id="gameForm" class="panelGroup">
+                <c:choose>
+                    <c:when test="#{not empty viewBean.plays}">
+                        <ul>
+                            <ui:repeat value="#{viewBean.plays}" var="entry">
+                                <li><h:outputText value="#{entry.text}" /></li>
+                            </ui:repeat>
+                        </ul>
+                    </c:when>
+                    <c:otherwise>
+                        <p>No records yet...</p>
+                    </c:otherwise>
+                </c:choose>
+            </h:panelGroup>
+
+            <!-- Login Form -->
+            <h:panelGroup id="loginForm" class="panelGroup">
+                <h:outputLabel for="username" value="Username:" />
+                <h:inputText id="username" value="#{viewBean.username}" required="true" requiredMessage="Username is required!" disabled="#{viewBean.isLoggedIn()}" />
+                <h:message for="username" class="error" />
+                <h:commandButton value="Login" action="#{viewBean.login()}" disabled="#{viewBean.isLoggedIn()}">
+                    <f:ajax execute="loginForm" render="loginForm joinForm" />
+                </h:commandButton>
+            </h:panelGroup>
+
+            <!-- Join Form -->
+            <h:panelGroup id="joinForm" class="panelGroup">
+                <h:commandButton value="Join" action="#{viewBean.join()}" disabled="#{viewBean.isGameRunning() or !viewBean.isLoggedIn() or viewBean.isPlaying()}">
+                    <f:ajax execute="joinForm" render="@none" />
+                </h:commandButton>
+            </h:panelGroup>
+
+            <!-- Next Form -->
+            <h:panelGroup id="nextForm" class="panelGroup">
+                <h:commandButton value="Next" action="#{viewBean.next()}" disabled="#{!viewBean.isUserTurn()}">
+                    <f:ajax execute="nextForm" render="@none" />
+                </h:commandButton>
+            </h:panelGroup>
+
+        </h:form>
+
+    </h:body>
+</html>
