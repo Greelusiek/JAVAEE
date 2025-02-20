@@ -1,0 +1,3 @@
+com\example\cookietimeoutapp\SetCookieServlet.class
+com\example\cookietimeoutapp\CheckCookieServlet.class
+com\example\cookietimeoutapp\resources\JakartaEE10Resource.class
